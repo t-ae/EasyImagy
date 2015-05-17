@@ -5,7 +5,7 @@ import UIKit
 class ImageTests: XCTestCase {
 	func testSequence() {
 		if true {
-			var image = Image(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
+			var image = Image<Pixel>(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
 			
 			var i = 0
 			for pixel in image {
@@ -37,7 +37,7 @@ class ImageTests: XCTestCase {
 		}
 		
 		if true {
-			var image = Image(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)![1...2, 1...2]!
+			var image = Image<Pixel>(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)![1...2, 1...2]!
 			
 			var i = 0
 			for pixel in image {
@@ -70,7 +70,7 @@ class ImageTests: XCTestCase {
 	}
 	
 	func testSubscriptGet() {
-		let image = Image(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
+		let image = Image<Pixel>(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
 		
 		XCTAssertEqual(255, image[0][0]!.red)
 		XCTAssertEqual(  0, image[0][0]!.green)
@@ -155,7 +155,7 @@ class ImageTests: XCTestCase {
 	
 	func testSubscriptSet() {
 		if true {
-			var image = Image(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
+			var image = Image<Pixel>(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
 			var original = image
 			
 			image[0][0] = Pixel(red:  2, green:  3, blue:  5, alpha:  7)
@@ -205,7 +205,7 @@ class ImageTests: XCTestCase {
 		}
 		
 		if true {
-			var image = Image(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)![1...2, 1...2]!
+			var image = Image<Pixel>(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)![1...2, 1...2]!
 			var original = image
 			
 			image[0][0] = Pixel(red:  2, green:  3, blue:  5, alpha:  7)
@@ -256,7 +256,7 @@ class ImageTests: XCTestCase {
 	}
 	
 	func testSubscriptRange() {
-		let image = Image(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)![1...2][1...2]!
+		let image = Image<Pixel>(named: "Test4x4", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)![1...2][1...2]!
 		
 		XCTAssertEqual(2, image.width)
 		XCTAssertEqual(2, image.height)
@@ -303,7 +303,7 @@ class ImageTests: XCTestCase {
 	}
 	
 	func testMap() {
-		let image = Image(named: "Test2x1", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.map { (var pixel: Pixel) -> Pixel in
+		let image = Image<Pixel>(named: "Test2x1", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.map { (var pixel: Pixel) -> Pixel in
 			pixel.red /= 2
 			pixel.green /= 2
 			pixel.blue /= 2
@@ -323,7 +323,7 @@ class ImageTests: XCTestCase {
 	}
 	
 	func testFlipX() {
-		let image = Image(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.flipX()
+		let image = Image<Pixel>(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.flipX()
 
 		XCTAssertEqual(  0, image[0][0]!.red)
 		XCTAssertEqual(255, image[0][0]!.green)
@@ -348,7 +348,7 @@ class ImageTests: XCTestCase {
 	}
     
 	func testFlipY() {
-		let image = Image(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.flipY()
+		let image = Image<Pixel>(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.flipY()
 		
 		XCTAssertEqual(  0, image[0][0]!.red)
 		XCTAssertEqual(  0, image[0][0]!.green)
@@ -372,7 +372,7 @@ class ImageTests: XCTestCase {
 	}
 	
 	func testResize() {
-		let image = Image(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.resize(width: 4, height: 4, interpolationQuality: kCGInterpolationNone)
+		let image = Image<Pixel>(named: "Test2x2", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!.resize(width: 4, height: 4, interpolationQuality: kCGInterpolationNone)
 		
 		XCTAssertEqual(4, image.width)
 		XCTAssertEqual(4, image.height)
@@ -459,7 +459,7 @@ class ImageTests: XCTestCase {
 	}
 	
 	func testRotate() {
-		let image = Image(named: "Test2x1", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
+		let image = Image<Pixel>(named: "Test2x1", inBundle: NSBundle(forClass: ImageTests.self), compatibleWithTraitCollection: nil)!
 
 		for times in [-8, -4, 0, 4, 8] {
 			let rotated = image.rotate(times)
@@ -531,7 +531,7 @@ class ImageTests: XCTestCase {
 	}
 	
     func testCopyOnWritePerformance() {
-		let image = Image(width: 8192, height: 8192)
+		let image = Image<Pixel>(width: 8192, height: 8192, pixels: [Pixel](count: 8192 * 8192, repeatedValue: Pixel.white))
 		measureBlock {
 			let copy = image
 			XCTAssertEqual(8192 * 8192, copy.count)
@@ -539,11 +539,25 @@ class ImageTests: XCTestCase {
     }
     
 	func testCopyPerformance() {
-		let image = Image(width: 8192, height: 8192)
+		let image = Image(width: 8192, height: 8192, pixels: [Pixel](count: 8192 * 8192, repeatedValue: Pixel.white))
 		measureBlock {
 			var copy = image
-			copy[0, 0] = Pixel.white
+			copy[0][0] = Pixel.white // Copies here
 			XCTAssertEqual(8192 * 8192, copy.count)
+		}
+	}
+	
+	func testMapPixelToPixelPerformance() {
+		let image = Image<Pixel>(width: 256, height: 256, pixels: [Pixel](count: 256 * 256, repeatedValue: Pixel.white))
+		measureBlock {
+			image.map { Pixel(gray: $0.gray) }
+		}
+	}
+	
+	func testMapPixelToUIntPerformance() {
+		let image = Image<Pixel>(width: 256, height: 256, pixels: [Pixel](count: 256 * 256, repeatedValue: Pixel.white))
+		measureBlock {
+			image.map { $0.gray }
 		}
 	}
 }

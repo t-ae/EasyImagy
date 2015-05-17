@@ -4,7 +4,7 @@ EasyImagy
 _EasyImagy_ makes it easy to deal with images in Swift.
 
 ```swift
-var image = Image(named: "ImageName")!
+var image = Image<Pixel>(named: "ImageName")!
 
 println(image[y][x]) // `image[x, y]` is also available
 image[y][x] = Pixel(red: 255, green: 0, blue: 0, alpha: 255)
@@ -15,10 +15,10 @@ for pixel in image {
 }
 
 // Converts the image (e.g. binarizations)
-let binarized = image.map { $0.gray < 128 ? Pixel.black : Pixel.white }
+let binarized: Image<UInt8> = image.map { $0.gray < 128 ? 0 : 255 }
 
 // From/to `UIImage`
-image = Image(UIImage: imageView.image!)
+image = Image<Pixel>(UIImage: imageView.image!)
 imageView.image = image.UIImage
 ```
 
@@ -27,23 +27,10 @@ Introduction
 
 Dealing with images using _CoreGraphics_ is too complicated for casual use: various formats, old C APIs and painful memory management. _EasyImagy_ provides the easier way to deal with images in exchange for some performance.
 
-All `Image`s in _EasyImage_ have pixels formatted as RGBA. `Pixel` is a simple structure declared as follows.
+`Image` and `Pixel` provide some convenient methods and properties to make processing images easy. For example, it is possible to convert an image to grayscale in one line combining `Image#map` with `Pixel#gray` as shown below.
 
 ```swift
-struct Pixel {
-    var red: UInt8
-    var green: UInt8
-    var blue: UInt8
-    var alpha: UInt8
-}
-```
-
-You can access to a pixel easily using subscripts like `image[y][x]` and its channels by properties `red`, `green`, `blue` and `alpha`.
-
-`Image` and `Pixel` also provide some convenient methods and properties to make processing images easy. For example, it is possible to convert an image to grayscale combining `Image#map` with `Pixel#gray` in one line as shown below.
-
-```swift
-let result = image.map { Pixel(gray: $0.gray) }
+let result: Image<UInt8> = image.map { $0.gray }
 ```
  
 Usage
@@ -58,27 +45,23 @@ import EasyImagy
 ### Initialization
 
 ```swift
-let image = Image(named: "ImageName")
+let image = Image<Pixel>(named: "ImageName")
 ```
 
 ```swift
-let image = Image(contentsOfFile: "path/to/file")
+let image = Image<Pixel>(contentsOfFile: "path/to/file")
 ```
 
 ```swift
-let image = Image(data: NSData(...))
+let image = Image<Pixel>(data: NSData(...))
 ```
 
 ```swift
-let image = Image(UIImage: imageView.image!)
+let image = Image<Pixel>(UIImage: imageView.image!)
 ```
 
 ```swift
-let image = Image(width: 640, height: 480) // a transparent image
-```
-
-```swift
-let image = Image(width: 640, height: 480, pixels: pixels)
+let image = Image<Pixel>(width: 640, height: 480, pixels: pixels)
 ```
 
 ### Access to a pixel
@@ -168,34 +151,34 @@ let resultOrNil = image[0..<100][0..<100] // `nil` when out of bounds
 #### Grayscale
 
 ```swift
-let result = image.map { (pixel: Pixel) -> Pixel in
-    Pixel(gray: pixel.gray)
+let result = image.map { (pixel: Pixel) -> UInt8 in
+    pixel.gray
 }
 ```
 
 ```swift
 // Shortened form
-let result = image.map { Pixel(gray: $0.gray) }
+let result: Image<UInt8> = image.map { $0.gray }
 ```
 
 #### Binarization
 
 ```swift
-let result = image.map { (pixel: Pixel) -> Pixel in
-    pixel.gray < 128 ? Pixel.black : Pixel.white
+let result = image.map { (pixel: Pixel) -> UInt8 in
+    pixel.gray < 128 ? 0 : 255
 }
 ```
 
 ```swift
 // Shortened form
-let result = image.map { $0.gray < 128 ? Pixel.black : Pixel.white }
+let result: Image<UInt8> = image.map { $0.gray < 128 ? 0 : 255 }
 ```
 
 #### Binarization (auto threshold)
 
 ```swift
 let threshold = UInt8(image.reduce(0) { $0 + $1.grayInt } / image.count)
-let result = image.map { $0.gray < threshold ? Pixel.black : Pixel.white }
+let result: Image<UInt8> = image.map { $0.gray < threshold ? 0 : 255 }
 ```
 
 #### Mean filter
@@ -230,7 +213,7 @@ let result = image.map { x, y, pixel in
 #### From UIImage
 
 ```swift
-let image = Image(UIImage: imageView.image!)
+let image = Image<Pixel>(UIImage: imageView.image!)
 ```
 
 #### To UIImage
@@ -251,6 +234,8 @@ github "koher/EasyImagy" >= 0.1.0
 ```
 
 ### Manually
+
+#### Embedded Framework
 
 For iOS 8 or later,
 
